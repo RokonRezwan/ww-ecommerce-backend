@@ -14,6 +14,7 @@ use App\Http\Requests\Product\UpdateProductRequest;
 class ProductController extends Controller
 {
     private $_getColumns = (['id', 'category_id', 'name', 'slug', 'image', 'description', 'is_active']);
+
     public function index()
     {
         $products = Product::with('category','prices')->get($this->_getColumns);
