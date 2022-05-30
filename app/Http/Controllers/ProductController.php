@@ -56,8 +56,11 @@ class ProductController extends Controller
         // Product Price Type Store
         $getAllPrices = $request->amount;
         $price_type_ids = $request->price_type_id;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
 
         $values = [];
+        $cd=date('Y-m-d H:i:s');
 
         if(($getAllPrices !== NULL) && ($price_type_ids !== NULL)){
             foreach ($getAllPrices as $index => $amount) {
@@ -65,6 +68,10 @@ class ProductController extends Controller
                     'product_id' => $product->id,
                     'amount' => $amount,
                     'price_type_id' => $price_type_ids[$index],
+                    'start_date' => $start_date[$index],
+                    'end_date' => $end_date[$index],
+                    'created_at' => $cd,
+                    'updated_at' => $cd,
                 ];
             }
         }
@@ -116,6 +123,10 @@ class ProductController extends Controller
 
         // Update Prices
         $product_price_ids = $request->product_price_id;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        
+        $cd=date('Y-m-d H:i:s');
 
         if($product_price_ids){
             for ($i = 0; $i < count($product_price_ids); $i++) {
@@ -123,6 +134,9 @@ class ProductController extends Controller
                 $values = [
                     'product_id' => $product->id,
                     'amount' => $request->amount[$i],
+                    'start_date' => $start_date[$i],
+                    'end_date' => $end_date[$i],
+                    'updated_at' => $cd
                 ];
 
                 $check_id = Price::find($product_price_ids[$i]);
@@ -134,6 +148,8 @@ class ProductController extends Controller
         }
 
         $price_type_new_ids = $request->price_type_new_id;
+        $new_start_date = $request->new_start_date;
+        $new_end_date = $request->new_end_date;
 
             if($price_type_new_ids){
                 for ($i = 0; $i < count($price_type_new_ids); $i++) {
@@ -141,6 +157,10 @@ class ProductController extends Controller
                         'product_id' => $product->id,
                         'amount' => $request->new_amount[$i],
                         'price_type_id' => $request->price_type_new_id[$i],
+                        'start_date' => $new_start_date[$i],
+                        'end_date' => $new_end_date[$i],
+                        'created_at' => $cd,
+                        'updated_at' => $cd,
                     ];
 
                     if ( ($request->new_amount[$i] !== NULL) && ($request->price_type_new_id[$i] !== NULL) ){
@@ -161,10 +181,8 @@ class ProductController extends Controller
 
     public function changeStatus(Product $product)
     {
-        
         $product->is_active = !$product->is_active;
         
-
         $product->update();
 
         return redirect()->route('products.index')->with('status','Product active status has been changed successfully !');
@@ -172,7 +190,6 @@ class ProductController extends Controller
 
     public function priceListDestroy($price_id)
     {
-        return 'hi';
         $price = Price::find($price_id);
         $price->delete();
 

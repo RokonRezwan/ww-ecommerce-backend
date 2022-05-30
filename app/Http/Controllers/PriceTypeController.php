@@ -65,10 +65,8 @@ class PriceTypeController extends Controller
     }
 
     public function changeStatus(PriceType $priceType)
-    {
-        
+    {        
         $priceType->is_active = !$priceType->is_active;
-        
 
         $priceType->update();
 

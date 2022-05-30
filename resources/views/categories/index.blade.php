@@ -79,7 +79,6 @@
                                                         onclick="return confirm('Are you sure you want to delete this Category ?')"><i
                                                             class="fa fa-trash"></i></button>
                                                 </form>
-
                                             </div>
                                         </td>
                                     </tr>

@@ -60,7 +60,8 @@
                         <div class="row prices p-3">
                             <label for="price" class="col-md-2 col-form-label">Price</label>
                             <div class="row col-md-10">
-                                <div class="col-md-4 col-12 g-0" style="padding-right:5px!important">
+                                <div class="col-md-2 col-12 g-0" style="padding-right:5px!important">
+                                    <label for="end_date" class="form-label">Price Type</label>
                                     <select class="form-select" name="price_type_id[]" id="price_type_id">
                                         <option value="" selected>Select Price Type</option>
                                         @foreach ($priceTypes as $ptype)
@@ -69,12 +70,25 @@
                                     </select>
                                 </div>
 
-                                <div class="col-12 col-md-4 g-0" style="padding-right:5px!important">
+                                <div class="col-12 col-md-2 g-0" style="padding-right:5px!important">
+                                    <label for="end_date" class="form-label">Price</label>
                                     <input type="number" min="0" class="form-control" name="amount[]" id="amount" placeholder="Price"
                                             value="{{ old('amount[]') }}">
                                 </div>
 
-                                <div class="col-12 col-md-4 d-flex align-items-end g-0">
+                                <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                                    <label for="start_date" class="form-label">Price Start From</label>
+                                    <input type="date" class="form-control" name="start_date[]" value="{{ date('Y-m-d') }}"
+                                        id="start_date">
+                                </div>
+
+                                <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                                    <label for="end_date" class="form-label">Price End Date</label>
+                                    <input type="date" class="form-control" name="end_date[]" value="{{ date('Y-m-d') }}"
+                                        id="end_date">
+                                </div>
+
+                                <div class="col-12 col-md-2 d-flex align-items-end g-0">
                                     <a href="javascript:void(0)" class="btn btn-success addMore"><span class="glyphicon glyphicon glyphicon-plus"
                                             aria-hidden="true"></span> Add More</a>
                                 </div>
@@ -111,7 +125,7 @@
     <div class="row pricesCopy p-3" style="display: none;">
         <label for="category" class="col-md-2 col-form-label"></label>
         <div class="row col-md-10">
-            <div class="col-md-4 col-12 g-0" style="padding-right:5px!important">
+            <div class="col-md-2 col-12 g-0" style="padding-right:5px!important">
                 <select class="form-select" name="price_type_id[]" id="price_type_id">
                     <option value="" selected>Select Price Type</option>
                     @foreach ($priceTypes as $ptype)
@@ -120,9 +134,19 @@
                 </select>
             </div>
 
-            <div class="col-12 col-md-4 g-0" style="padding-right:5px!important">
+            <div class="col-12 col-md-2 g-0" style="padding-right:5px!important">
                 <input type="number" min="0" class="form-control" name="amount[]" id="amount" placeholder="Price"
                         value="{{ old('amount[]') }}">
+            </div>
+
+            <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                <input type="date" class="form-control" name="start_date[]" value="{{ date('Y-m-d') }}"
+                    id="start_date">
+            </div>
+
+            <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                <input type="date" class="form-control" name="end_date[]" value="{{ date('Y-m-d') }}"
+                    id="end_date">
             </div>
 
             <div class="col-md-2 col-12 d-flex align-items-end g-0">

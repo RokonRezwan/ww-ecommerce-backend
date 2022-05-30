@@ -8,9 +8,11 @@ use App\Http\Controllers\Controller;
 
 class ProductApiController extends Controller
 {
+    private $_getColumns = (['id', 'category_id', 'name', 'slug', 'image', 'description', 'is_active']);
+
     public function index()
     {
-        $products = Product::with('category','prices')->get();
+        $products = Product::with('category','prices')->get($this->_getColumns);
         
         return response()->json([
             'product' => $products

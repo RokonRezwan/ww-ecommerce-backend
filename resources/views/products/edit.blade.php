@@ -82,15 +82,23 @@
                             <div class="col-md-10">
 
                                 <div class="row d-flex align-items-end">
-                                    <div class="col-md-4 col-12">
-                                        <label for="price_type_id" class="form-label">Product Price Type</label>
+                                    <div class="col-md-2 col-12">
+                                        <label for="price_type_id" class="form-label">Price Type</label>
                                     </div>
         
-                                    <div class="col-md-4 col-12">
+                                    <div class="col-md-2 col-12">
                                         <label for="price" class="form-label">Price</label>
                                     </div>
+
+                                    <div class="col-md-3 col-12">
+                                        <label for="price" class="form-label">Start Date</label>
+                                    </div>
+
+                                    <div class="col-md-3 col-12">
+                                        <label for="price" class="form-label">End Date</label>
+                                    </div>
         
-                                    <div class="col-md-4 col-12">
+                                    <div class="col-md-2 col-12">
                                         <a href="javascript:void(0)" class="btn btn-success addMore"><span class="glyphicon glyphicon glyphicon-plus"
                                                 aria-hidden="true"></span> Add More</a>
                                     </div>
@@ -100,7 +108,7 @@
                                     <input type="hidden" value="{{ $price->id }}" name="product_price_id[]"/>
 
                                     <div class="row col-md-10" style="margin-bottom: 5px">
-                                        <div class="col-md-4 col-12 g-0" style="padding-right:5px!important">
+                                        <div class="col-md-2 col-12 g-0" style="padding-right:5px!important">
                                             <select class="form-select" name="price_type_id[]" id="price_type_id">
                                             <option value="" selected>Select Price Type<option>                                                
                                                 @foreach ($priceTypes as $ptype)
@@ -109,29 +117,29 @@
                                             </select>
                                         </div>
         
-                                        <div class="col-md-4 col-12" style="padding-right:5px!important">
+                                        <div class="col-md-2 col-12" style="padding-right:5px!important">
                                             <input type="number" min="0" class="form-control" name="amount[]" id="amount" placeholder="Price"
                                                     value="{{ $price->amount }}">
+                                        </div>
+
+                                        <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                                            <input type="date" class="form-control" name="start_date[]" value="{{ $price->start_date }}"
+                                                id="start_date">
+                                        </div>
+        
+                                        <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                                            <input type="date" class="form-control" name="end_date[]" value="{{ $price->end_date }}"
+                                                id="end_date">
                                         </div>
         
                                         <div class="col-md-2 col-12 d-flex align-items-end g-0" style="margin-top:5px!important;">
                                             <a href="javascript:void(0)" class="btn btn-danger deleteRecord" data-id="{{ $price->id }}"><span class="glyphicon glyphicon glyphicon-remove"
                                                     aria-hidden="true"></span> Remove</a>
                                         </div>
-
-                                        {{-- <form action="{{ route('products.priceListDestroy', $price->id) }}" method="post">
-                                            @csrf
-                                            @method('PUT')
-
-                                            <button type="submit" class="btn btn-danger"
-                                                onclick="return confirm('Are you sure you want to delete this product ?')"><i
-                                                    class="fa fa-trash"></i></button>
-                                        </form> --}}
-        
                                     </div>
                                 @empty
-                                    <div class="row col-md-10" style="margin-bottom: 5px">
-                                        <div class="col-md-4 col-12 g-0" style="padding-right:5px!important">
+                                    <div class="row col-md-10 g-0" style="padding:0px;">
+                                        <div class="col-md-2 col-12 g-0" style="padding:0px;">
                                             <select class="form-select" name="price_type_new_id[]" id="price_type_new_id">
                                                 <option value="" selected>Select Price Type</option>
                                                 @foreach ($priceTypes as $ptype)
@@ -140,14 +148,19 @@
                                             </select>
                                         </div>
         
-                                        <div class="col-md-4 col-12 g-0" style="padding-right:5px!important">
+                                        <div class="col-md-3 col-12 g-0" style="padding-right:5px!important">
                                             <input type="number" min="0" class="form-control" name="new_amount[]" id="new_amount" placeholder="Price"
                                                     value="{{ old('new_amount[]') }}">
                                         </div>
+
+                                        <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                                            <input type="date" class="form-control" name="new_start_date[]" value="{{ date('Y-m-d') }}"
+                                                id="new_start_date">
+                                        </div>
         
-                                        <div class="col-md-4 col-12 d-flex align-items-end g-0">
-                                            <a href="javascript:void(0)" class="btn btn-success addMore"><span class="glyphicon glyphicon glyphicon-plus"
-                                                    aria-hidden="true"></span> Add More</a>
+                                        <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                                            <input type="date" class="form-control" name="new_end_date[]" value="{{ date('Y-m-d') }}"
+                                                id="new_end_date">
                                         </div>
                                     </div>
                                 @endforelse
@@ -175,7 +188,7 @@
         <div class="row pricesCopy p-2" style="display: none;">
             <label for="price" class="col-md-2 col-form-label"></label>
             <div class="row col-md-10">
-                <div class="col-md-4 col-12 g-0" style="padding-right:5px!important">
+                <div class="col-md-2 col-12 g-0" style="padding-right:5px!important">
                     <select class="form-select" name="price_type_new_id[]" id="price_type_new_id">
                         <option value="" selected>Select Price Type</option>
                         @foreach ($priceTypes as $ptype)
@@ -184,12 +197,22 @@
                     </select>
                 </div>
     
-                <div class="col-12 col-md-4 g-0" style="padding-right:5px!important">
+                <div class="col-12 col-md-2 g-0" style="padding-right:5px!important">
                     <input type="number" min="0" class="form-control" name="new_amount[]" id="new_amount" placeholder="Price"
                             value="{{ old('new_amount[]') }}">
                 </div>
+
+                <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                    <input type="date" class="form-control" name="new_start_date[]" value="{{ date('Y-m-d') }}"
+                        id="new_start_date">
+                </div>
+
+                <div class="col-12 col-md-3 g-0" style="padding-right:5px!important">
+                    <input type="date" class="form-control" name="new_end_date[]" value="{{ date('Y-m-d') }}"
+                        id="new_end_date">
+                </div>
     
-                <div class="col-md-4 col-12 d-flex align-items-end g-0">
+                <div class="col-md-2 col-12 d-flex align-items-end g-0">
                     <a href="javascript:void(0)" class="btn btn-danger remove"><span class="glyphicon glyphicon glyphicon-remove"
                             aria-hidden="true"></span> Remove</a>
                 </div>

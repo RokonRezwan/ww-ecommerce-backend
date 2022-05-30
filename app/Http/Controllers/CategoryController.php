@@ -66,9 +66,7 @@ class CategoryController extends Controller
 
     public function changeStatus(Category $category)
     {
-        
         $category->is_active = !$category->is_active;
-        
 
         $category->update();
 

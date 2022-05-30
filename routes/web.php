@@ -23,10 +23,10 @@ Route::controller(ProductController::class)->prefix('products')->as('products.')
     Route::get('/{product}', 'show')->name('show');
     Route::patch('/{product}', 'update')->name('update');
     Route::delete('/{product}', 'destroy')->name('destroy');
+    Route::post('/product/price-list/{price_id}', 'priceListDestroy')->name('priceListDestroy');
 
     Route::get('/{product}/edit', 'edit')->name('edit');
     Route::get('/{product}/change-status', 'changeStatus')->name('changeStatus');
-    Route::post('/product/price-list/{price_id}', 'priceListDestroy')->name('priceListDestroy');
 
 });
 
