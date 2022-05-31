@@ -29,4 +29,9 @@ class Product extends Model
     {
         return $this->hasMany(Price::class)->with('priceTypes');
     }
+
+    public function products()
+    {
+        return $this->belongsTo(OrderDetails::class);
+    }
 }

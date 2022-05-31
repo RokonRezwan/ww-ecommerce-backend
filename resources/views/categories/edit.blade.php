@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Update Product')
+@section('title', 'Update Category')
 
 @section('content')
     <div class="row justify-content-center">

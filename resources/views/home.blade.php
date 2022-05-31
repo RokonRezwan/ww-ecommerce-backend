@@ -40,6 +40,16 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-4 py-5">
+                            <div class="card bg-primary text-white" style="width: 18rem;">
+                                <div class="card-body">
+                                  <h5 class="card-title">Orders Index</h5>
+                                  <p class="card-text">Show all Orders Details.</p>
+                                  <a href="{{ route('orders.index') }}" class="btn btn-success">Orders</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

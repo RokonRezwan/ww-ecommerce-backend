@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PriceTypeController;
@@ -59,5 +60,15 @@ Route::controller(PriceTypeController::class)->prefix('price-type')->as('priceTy
 
     Route::get('/{priceType}/edit', 'edit')->name('edit');
     Route::get('/{priceType}/change-status', 'changeStatus')->name('changeStatus');
+
+});
+
+Route::controller(OrderController::class)->prefix('orders')->as('orders.')->group(function () {
+
+    Route::get('/', 'index')->name('index');
+    
+    Route::get('/{order}', 'show')->name('show');
+
+    Route::get('/{order}/change-status', 'changeStatus')->name('changeStatus');
 
 });
