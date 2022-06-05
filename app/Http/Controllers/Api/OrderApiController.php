@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 
 class OrderApiController extends Controller
 {
-    private $_getColumns = (['id', 'category_id', 'name', 'slug', 'image', 'description', 'is_active']);
+    /* private $_getColumns = (['id', 'category_id', 'name', 'slug', 'image', 'description', 'is_active']); */
 
     public function index()
     {
@@ -22,25 +22,15 @@ class OrderApiController extends Controller
         ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        return $request;
+        $order = new Order;
+        $order->order_number = random_int(000001,999999);
+        $order->total_price = $request->total_price;
+        /* $order->customer_name = $request->customer_name; */
+
+        return $order;
     }
 
     /**

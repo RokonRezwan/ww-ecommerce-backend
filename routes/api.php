@@ -16,4 +16,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('api-products', ProductApiController::class)->only(['index','show']);
 
-Route::apiResource('api-orders', OrderApiController::class)->only(['index','show']);
+Route::apiResource('api-orders', OrderApiController::class)->only(['index','show','store']);
+
+//API route for register new user
+Route::post('/register', [AuthController::class, 'register']);
+
+//API route for login user
+Route::post('/login', [AuthController::class, 'login']);
