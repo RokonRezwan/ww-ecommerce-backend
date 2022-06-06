@@ -4,16 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\OrderDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class OrderApiController extends Controller
 {
-    /* private $_getColumns = (['id', 'category_id', 'name', 'slug', 'image', 'description', 'is_active']); */
+    private $_getColumns = (['id', 'category_id', 'name', 'slug', 'image', 'description', 'is_active']);
 
     public function index()
     {
-        $orders = Order::with('orderDetails')->get();
+        $orders = Order::with('orderDetails')->get($this->_getColumns);
         $products = Product::get(['id','name','image']);
         
         return response()->json([
@@ -24,57 +25,47 @@ class OrderApiController extends Controller
 
     public function store(Request $request)
     {
-        return $request;
+        $shipping = $request->shippingUserName.'<br>'.$request->shipping_address;
+        $billing = $request->billingUserName.'<br>'.$request->billing_address;
+
         $order = new Order;
-        $order->order_number = random_int(000001,999999);
-        $order->total_price = $request->total_price;
-        /* $order->customer_name = $request->customer_name; */
 
-        return $order;
-    }
+        $order->user_id = 1;
+        $order->order_status_id = 1;
+        $order->order_number = random_int(100000,999999);
+        $order->shipping_address = $shipping;
+        $order->billing_address = $billing;
+        $order->promo_discount_amount = $request->promo_discount_amount;
+        $order->tax_amount = $request->tax_amount;
+        $order->shipping_fee = $request->shipping_fee;
+        $order->item_sub_total = $request->item_sub_total;
+        $order->grand_total = $request->grand_total;
+        $order->payment_method = $request->payment_method;
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Order $order)
-    {
-        //
-    }
+        $order->save();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Order $order)
-    {
-        //
-    }
+        $getAllPrices = $request->prices;
+        $product_names = $request->product_name;
+        $quantities = $request->quantity;
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Order $order)
-    {
-        //
-    }
+        $cartItems = [];
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Order $order)
-    {
-        //
+        if(($getAllPrices !== NULL) && ($product_names !== NULL)){
+            foreach ($getAllPrices as $index => $price) {
+                $cartItems[] = [
+                    'order_id' => $order->id,
+                    'product_name' => $product_names[$index],
+                    'price' => $price,
+                    'quantity' => $quantities[$index],
+                ];
+            }
+        }
+
+        if ( ($price !== NULL) && ($product_names[$index] !== NULL) ){
+            $orderDetails = new OrderDetails;
+            $orderDetails->insert($cartItems);
+        }
+
+        return response()->json(['status' => 'Order Placed Successfully']);
     }
 }

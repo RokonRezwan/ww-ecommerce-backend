@@ -10,7 +10,7 @@ use App\Http\Requests\Category\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
-    private $_getColumns = (['id', 'name', 'is_active']);
+    private $_getColumns = ['id', 'name','is_active'];
 
     public function index()
     {

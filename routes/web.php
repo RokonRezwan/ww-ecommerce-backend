@@ -68,7 +68,8 @@ Route::controller(OrderController::class)->prefix('orders')->as('orders.')->grou
     Route::get('/', 'index')->name('index');
     
     Route::get('/{order}', 'show')->name('show');
+    Route::post('/{order}', 'update')->name('update');
 
-    Route::get('/{order}/change-status', 'changeStatus')->name('changeStatus');
+    Route::patch('/changeDeliveryStatus', 'changeDeliveryStatus')->name('changeDeliveryStatus');
 
 });

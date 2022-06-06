@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->foreignId('order_id')->constrained('orders')->cascadeOnUpdate()->restrictOnDelete();
 
-            $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->restrictOnDelete();
+            $table->string('product_name', 100);
             $table->decimal('price', 10, 2)->default(0);
             $table->integer('quantity')->default(1);
 

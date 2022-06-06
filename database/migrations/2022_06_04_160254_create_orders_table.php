@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
@@ -30,18 +25,13 @@ return new class extends Migration
             $table->decimal('grand_total', 10, 2);
 
             $table->tinyInteger('payment_method');
-            $table->tinyInteger('payment_status');
+            $table->tinyInteger('payment_status')->default(1);
 
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('orders');

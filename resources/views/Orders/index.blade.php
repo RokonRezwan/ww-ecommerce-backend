@@ -33,12 +33,12 @@
                                 <tr>
                                     <th>SL</th>
                                     <th>Order Number</th>
-                                    <th class="text-center no-sort">Customer Name</th>
-                                    <th class="text-center no-sort">Shipping Address</th>
-                                    <th class="text-center no-sort">Phone Number</th>
-                                    <th class="text-center no-sort">Total Price</th>
-                                    <th class="text-center no-sort">Delivery Status</th>
-                                    <th class="text-center no-sort">Delivery Details</th>
+                                    <th class="text-center">Order Date</th>
+                                    <th class="text-center">Shipping Address</th>
+                                    <th class="text-center">Billing Address</th>
+                                    <th class="text-center">Total Price</th>
+                                    <th class="text-center">Delivery Status</th>
+                                    <th class="text-center">Details</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -49,34 +49,28 @@
                                     <tr>
                                         <td>{{ $sl++ }}</td>
                                         <td>{{ $order->order_number }}</td>
+                                        <td>{{ date('Y-m-d H:i:s', strtotime($order->created_at)); }}</td>
                                         <td class="text-center">
-                                            {{ $order->customer_name }}
-                                        </td>
-                                        <td>
-                                          {{ $order->shipping_address }}
+                                            {!! $order->shipping_address !!}
                                         </td>
                                         <td class="text-center">
-                                          {{ $order->phone_number }}
+                                          {!! $order->billing_address !!}
                                         </td>
                                         <td class="text-center">
-                                          {{ $order->total_price }}
+                                          {{ $order->grand_total }}
                                         </td>
                                         <td class="text-center">
-                                            <form action="{{ route('orders.changeStatus', $order->id) }}" method="post">
-                                            @csrf
-                                            @method('GET')
 
-                                                @if ($order['is_delivered'] == 1)
-                                                    <button type="submit" class="btn btn-success">Delivered</button>
-                                                @else
-                                                    <button type="submit" class="btn btn-danger">Not Delivered</button>
-                                                @endif
-                                            </form>
+                                            <select data-id="{{ $order->id }}" class="form-select orderStatus" name="orderStatus" id="orderStatus" style="width: 130px">
+                                                @foreach ($orderStatus as $status)
+                                                <option value="{{ $status->id }}" @if ($status->id == $order->order_status_id) selected @endif id="statusVal">{{ $status->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </td>
                                         <td class="text-center">
                                           <div class="btn-group" role="group">
-                                               <a href="{{ route('orders.show', $order->id) }}" 
-                                                  class="btn btn-primary me-1"><i class="fa fa-eye"></i></a>
+                                            <a href="{{ route('orders.show', $order->id) }}" class="btn  btn-primary me-1"><i class="fa fa-eye"></i>
+                                            </a> 
                                           </div>
                                       </td>
                                     </tr>
@@ -90,17 +84,4 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#datatable').DataTable({
-                order: [0,'desc'],
-                responsive: true,
-                columnDefs: [{
-                    targets: 'no-sort',
-                    orderable: false
-                }],
-            });
-        });
-    </script>
-@endpush
+
