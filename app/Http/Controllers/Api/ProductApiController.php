@@ -12,7 +12,7 @@ class ProductApiController extends Controller
 
     public function index()
     {
-        $products = Product::with('category','prices')->get($this->_getColumns);
+        $products = Product::with('category','prices')->where('is_active', true)->get($this->_getColumns);
         
         return response()->json([
             'product' => $products

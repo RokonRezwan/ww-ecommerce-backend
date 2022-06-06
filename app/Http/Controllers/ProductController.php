@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\PriceType;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 
@@ -32,52 +34,61 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $imageName = NULL;
+        try {
+                DB::transaction(function () use($request) {
+                $imageName = NULL;
 
-            if($request->hasFile('image')){
-                $image = $request->file('image');
-                $imageName = $this->_getFileName($image->getClientOriginalExtension());
-                $image->move(public_path('product-images'), $imageName);
-            }
+                    if($request->hasFile('image')){
+                        $image = $request->file('image');
+                        $imageName = $this->_getFileName($image->getClientOriginalExtension());
+                        $image->move(public_path('product-images'), $imageName);
+                    }
 
-        $product = new Product; 
+                $product = new Product; 
 
-        //insert data
-        $product->name = $request->name;
-        $product->category_id = $request->category_id;
-        $product->slug = Str::slug($request->name);
-        $product->image = $imageName;
-        $product->description = $request->description;
+                //insert data
+                $product->name = $request->name;
+                $product->category_id = $request->category_id;
+                $product->slug = Str::slug($request->name);
+                $product->image = $imageName;
+                $product->description = $request->description;
 
 
-        //save to database
-        $product->save();
+                //save to database
+                $product->save();
 
-        // Product Price Type Store
-        $getAllPrices = $request->amount;
-        $price_type_ids = $request->price_type_id;
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+                // Product Price Type Store
+                $getAllPrices = $request->amount;
+                $price_type_ids = $request->price_type_id;
+                $start_date = $request->start_date;
+                $end_date = $request->end_date;
 
-        $values = [];
-        $cd=date('Y-m-d H:i:s');
+                $values = [];
+                $cd=date('Y-m-d H:i:s');
 
-        if(($getAllPrices !== NULL) && ($price_type_ids !== NULL)){
-            foreach ($getAllPrices as $index => $amount) {
-                $values[] = [
-                    'product_id' => $product->id,
-                    'amount' => $amount,
-                    'price_type_id' => $price_type_ids[$index],
-                    'start_date' => $start_date[$index],
-                    'end_date' => $end_date[$index],
-                    'created_at' => $cd,
-                    'updated_at' => $cd,
-                ];
-            }
-        }
+                if(($getAllPrices !== NULL) && ($price_type_ids !== NULL)){
+                    foreach ($getAllPrices as $index => $amount) {
+                        $values[] = [
+                            'product_id' => $product->id,
+                            'amount' => $amount,
+                            'price_type_id' => $price_type_ids[$index],
+                            'start_date' => $start_date[$index],
+                            'end_date' => $end_date[$index],
+                            'created_at' => $cd,
+                            'updated_at' => $cd,
+                        ];
+                    }
+                }
 
-        if ( ($amount !== NULL) && ($price_type_ids[$index] !== NULL) ){
-            $product->prices()->insert($values);
+                if ( ($amount !== NULL) && ($price_type_ids[$index] !== NULL) ){
+                    $product->prices()->insert($values);
+                }
+            });
+
+        } catch (QueryException $e) {
+
+            return back()->withErrors(['status' => $e->getMessage()]);
+
         }
 
         return redirect()->route('products.index')->with('status', 'Product has been created successfully.');
