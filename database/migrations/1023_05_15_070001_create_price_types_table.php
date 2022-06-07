@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('price_types', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name', 100);
+            $table->string('name', 100)->unique();
 
             $table->boolean('is_active')->default(true);
             $table->timestamps();

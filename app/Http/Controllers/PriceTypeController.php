@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PriceType;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use App\Http\Requests\PriceType\StorePriceTypeRequest;
 use App\Http\Requests\PriceType\UpdatePriceTypeRequest;
 
@@ -25,13 +26,17 @@ class PriceTypeController extends Controller
 
     public function store(StorePriceTypeRequest $request)
     {
-        $priceType = new PriceType; 
+        try 
+        {
+            $priceType = new PriceType; 
 
-        //insert data
-        $priceType->name = $request->name;
+            $priceType->name = $request->name;
 
-        //save to database
-        $priceType->save();
+            $priceType->save();
+
+        } catch (QueryException $e) {
+            return redirect()->route('priceTypes.index')->with('errorMsg', $e->getMessage());
+        }
 
         return redirect()->route('priceTypes.index')->with('status', 'Price Type has been created successfully.');
     }
@@ -48,11 +53,15 @@ class PriceTypeController extends Controller
 
     public function update(UpdatePriceTypeRequest $request, PriceType $priceType)
     {
-        //insert data
-        $priceType->name = $request->name;
+        try 
+        {
+            $priceType->name = $request->name;
 
-        //save to database
-        $priceType->update();
+            $priceType->update();
+
+        } catch (QueryException $e) {
+            return redirect()->route('priceTypes.index')->with('errorMsg', $e->getMessage());
+        }
 
         return redirect()->route('priceTypes.index')->with('status', 'Price Type has been updated successfully.');
     }

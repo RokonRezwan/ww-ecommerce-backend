@@ -19,15 +19,15 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::with('category','prices')->get($this->_getColumns);
+        $products = Product::with('category','prices')->OrderByIdDescending()->get($this->_getColumns);
 
         return view('products.index', compact('products'));
     }
 
     public function create()
     {
-        $categories = Category::all();
-        $priceTypes = PriceType::all();
+        $categories = Category::FilterIsActive()->get(['id', 'name']);
+        $priceTypes = PriceType::FilterIsActive()->get(['id', 'name']);
 
         return view('products.create', compact(['categories', 'priceTypes']));
     }
@@ -36,7 +36,8 @@ class ProductController extends Controller
     {
         try {
                 DB::transaction(function () use($request) {
-                $imageName = NULL;
+
+                    $imageName = NULL;
 
                     if($request->hasFile('image')){
                         $image = $request->file('image');
@@ -44,52 +45,47 @@ class ProductController extends Controller
                         $image->move(public_path('product-images'), $imageName);
                     }
 
-                $product = new Product; 
+                    $product = new Product; 
 
-                //insert data
-                $product->name = $request->name;
-                $product->category_id = $request->category_id;
-                $product->slug = Str::slug($request->name);
-                $product->image = $imageName;
-                $product->description = $request->description;
+                    $product->name = $request->name;
+                    $product->category_id = $request->category_id;
+                    $product->slug = Str::slug($request->name);
+                    $product->image = $imageName;
+                    $product->description = $request->description;
 
+                    $product->save();
 
-                //save to database
-                $product->save();
+                    $getAllPrices = $request->amount;
+                    $price_type_ids = $request->price_type_id;
+                    $start_date = $request->start_date;
+                    $end_date = $request->end_date;
 
-                // Product Price Type Store
-                $getAllPrices = $request->amount;
-                $price_type_ids = $request->price_type_id;
-                $start_date = $request->start_date;
-                $end_date = $request->end_date;
+                    $values = [];
+                    $cd=date('Y-m-d H:i:s');
 
-                $values = [];
-                $cd=date('Y-m-d H:i:s');
-
-                if(($getAllPrices !== NULL) && ($price_type_ids !== NULL)){
-                    foreach ($getAllPrices as $index => $amount) {
-                        $values[] = [
-                            'product_id' => $product->id,
-                            'amount' => $amount,
-                            'price_type_id' => $price_type_ids[$index],
-                            'start_date' => $start_date[$index],
-                            'end_date' => $end_date[$index],
-                            'created_at' => $cd,
-                            'updated_at' => $cd,
-                        ];
+                    if(($getAllPrices !== NULL) && ($price_type_ids !== NULL)){
+                        foreach ($getAllPrices as $index => $amount) {
+                            $values[] = [
+                                'product_id' => $product->id,
+                                'amount' => $amount,
+                                'price_type_id' => $price_type_ids[$index],
+                                'start_date' => $start_date[$index],
+                                'end_date' => $end_date[$index],
+                                'created_at' => $cd,
+                                'updated_at' => $cd,
+                            ];
+                        }
                     }
-                }
 
-                if ( ($amount !== NULL) && ($price_type_ids[$index] !== NULL) ){
-                    $product->prices()->insert($values);
-                }
-            });
+                    if ( ($amount !== NULL) && ($price_type_ids[$index] !== NULL) ){
+                        $product->prices()->insert($values);
+                    }
+                });
 
-        } catch (QueryException $e) {
+            } catch (QueryException $e) {
 
-            return back()->withErrors(['status' => $e->getMessage()]);
-
-        }
+                return redirect()->route('products.index')->with(['errorMsg' => $e->getMessage()]);
+            }
 
         return redirect()->route('products.index')->with('status', 'Product has been created successfully.');
     }
@@ -101,83 +97,88 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $categories = Category::all();
-        $priceTypes = PriceType::all();
+        $categories = Category::FilterIsActive()->get(['id', 'name']);
+        $priceTypes = PriceType::FilterIsActive()->get(['id', 'name']);
 
         return view('products.edit', compact(['product', 'categories', 'priceTypes']));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
     {
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = $this->_getFileName($image->getClientOriginalExtension());
-            $image->move(public_path('product-images'), $imageName);
+        try {
+            DB::transaction(function () use($request, $product) {
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    $imageName = $this->_getFileName($image->getClientOriginalExtension());
+                    $image->move(public_path('product-images'), $imageName);
 
-            if ($product->image !== NULL) {
-                if (file_exists(public_path('product-images/'. $product->image ))) {
-                    unlink(public_path('product-images/'. $product->image ));
+                    if ($product->image !== NULL) {
+                        if (file_exists(public_path('product-images/'. $product->image ))) {
+                            unlink(public_path('product-images/'. $product->image ));
+                        }
+                    }
+
+                    $product->image = $imageName;
                 }
-            }
 
-            $product->image = $imageName;
-        }
+                $product->name = $request->name;
+                $product->category_id = $request->category_id;
+                $product->slug = Str::slug($request->name);
+                $product->description = $request->description;
+                
+                $product->update();
 
-        //insert data
-        $product->name = $request->name;
-        $product->category_id = $request->category_id;
-        $product->slug = Str::slug($request->name);
-        $product->description = $request->description;
-        
-        //save to database
-        $product->update();
+                $product_price_ids = $request->product_price_id;
+                $start_date = $request->start_date;
+                $end_date = $request->end_date;
+                
+                $cd=date('Y-m-d H:i:s');
 
-        // Update Prices
-        $product_price_ids = $request->product_price_id;
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-        
-        $cd=date('Y-m-d H:i:s');
+                if($product_price_ids){
+                    for ($i = 0; $i < count($product_price_ids); $i++) {
 
-        if($product_price_ids){
-            for ($i = 0; $i < count($product_price_ids); $i++) {
+                        $values = [
+                            'product_id' => $product->id,
+                            'amount' => $request->amount[$i],
+                            'start_date' => $start_date[$i],
+                            'end_date' => $end_date[$i],
+                            'updated_at' => $cd
+                        ];
 
-                $values = [
-                    'product_id' => $product->id,
-                    'amount' => $request->amount[$i],
-                    'start_date' => $start_date[$i],
-                    'end_date' => $end_date[$i],
-                    'updated_at' => $cd
-                ];
+                        $check_id = Price::find($product_price_ids[$i]);
 
-                $check_id = Price::find($product_price_ids[$i]);
-
-                if ($check_id) {
-                    $product->prices()->where('id', $check_id->id)->update($values);
-                }
-            }
-        }
-
-        $price_type_new_ids = $request->price_type_new_id;
-        $new_start_date = $request->new_start_date;
-        $new_end_date = $request->new_end_date;
-
-            if($price_type_new_ids){
-                for ($i = 0; $i < count($price_type_new_ids); $i++) {
-                    $values2 = [
-                        'product_id' => $product->id,
-                        'amount' => $request->new_amount[$i],
-                        'price_type_id' => $request->price_type_new_id[$i],
-                        'start_date' => $new_start_date[$i],
-                        'end_date' => $new_end_date[$i],
-                        'created_at' => $cd,
-                        'updated_at' => $cd,
-                    ];
-
-                    if ( ($request->new_amount[$i] !== NULL) && ($request->price_type_new_id[$i] !== NULL) ){
-                      $product->prices()->insert($values2);
+                        if ($check_id) {
+                            $product->prices()->where('id', $check_id->id)->update($values);
+                        }
                     }
                 }
+
+                $price_type_new_ids = $request->price_type_new_id;
+                $new_start_date = $request->new_start_date;
+                $new_end_date = $request->new_end_date;
+
+                    if($price_type_new_ids){
+                        for ($i = 0; $i < count($price_type_new_ids); $i++) {
+                            $values2 = [
+                                'product_id' => $product->id,
+                                'amount' => $request->new_amount[$i],
+                                'price_type_id' => $request->price_type_new_id[$i],
+                                'start_date' => $new_start_date[$i],
+                                'end_date' => $new_end_date[$i],
+                                'created_at' => $cd,
+                                'updated_at' => $cd,
+                            ];
+
+                            if ( ($request->new_amount[$i] !== NULL) && ($request->price_type_new_id[$i] !== NULL) ){
+                            $product->prices()->insert($values2);
+                            }
+                        }
+                    }
+                });
+
+            } catch (QueryException $e) {
+
+                return redirect()->route('products.index')->with(['errorMsg' => $e->getMessage()]);
             }
 
         return redirect()->route('products.index')->with('status','Product has been Updated Successfully !');

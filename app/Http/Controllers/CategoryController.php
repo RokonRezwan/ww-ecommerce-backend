@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 
@@ -26,15 +27,20 @@ class CategoryController extends Controller
      
     public function store(StoreCategoryRequest $request)
     {
-        $category = new Category; 
-        
-        //insert data
-        $category->name = $request->name;
-        $category->slug = Str::slug($request->name, '-');
-        
-        //save to database
-        $category->save();
-        
+        try 
+        {
+            $category = new Category; 
+            
+            $category->name = $request->name;
+            $category->slug = Str::slug($request->name, '-');
+            
+            $category->save();
+            
+        } catch (QueryException $e) {
+
+            return redirect()->route('categories.index')->with('errorMsg', $e->getMessage());
+        }
+
         return redirect()->route('categories.index')->with('status', 'Category has been created successfully.');
     }
 
@@ -50,9 +56,15 @@ class CategoryController extends Controller
     
     public function update(UpdateCategoryRequest $request, Category $category)
     {
+        try 
+        {
             $category->name = $request->name;
 
             $category->update();
+        } catch (QueryException $e) {
+
+            return redirect()->route('categories.index')->with('errorMsg', $e->getMessage());
+        }
 
         return redirect()->route('categories.index')->with('status', 'Category has been updated successfully.');
     }

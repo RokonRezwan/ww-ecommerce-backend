@@ -19,4 +19,14 @@ class PriceType extends Model
     {
         return $this->belongsTo(Price::class);
     }
+
+    public function scopeOrderByIdDescending($query)
+    {
+        return $query->orderBy('id', 'DESC');
+    }
+
+    public function scopeFilterIsActive($query)
+    {
+        return $query->where('is_active', 1);
+    }
 }

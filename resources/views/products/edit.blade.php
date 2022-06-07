@@ -110,7 +110,7 @@
                                     <div class="row col-md-10" style="margin-bottom: 5px">
                                         <div class="col-md-2 col-12 g-0" style="padding-right:5px!important">
                                             <select class="form-select" name="price_type_id[]" id="price_type_id">
-                                            <option value="" selected>Select Price Type<option>                                                
+                                            <option value="" selected>Select Price Type</option>                                                
                                                 @foreach ($priceTypes as $ptype)
                                                 <option value="{{ $ptype->id }}" @if ($ptype->id == $price->priceTypes->id) selected @endif>{{ $ptype->name }}</option>
                                                 @endforeach

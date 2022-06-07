@@ -20,14 +20,6 @@
                 </div>
                 <div class="card-body">
 
-                    @if (session('status'))
-                        <div class="row">
-                            <div class="col-12 alert alert-success text-center" role="alert">
-                                {{ session('status') }}
-                            </div>
-                        </div>
-                    @endif
-
                     <div class="table-responsive">
                         <table id="datatable" class="table table-bordered dt-responsive nowrap">
                             <thead>

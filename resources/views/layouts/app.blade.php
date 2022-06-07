@@ -87,6 +87,20 @@
 
         <main class="py-4">
             <div class="container mb-5">
+                @if (session('status'))
+                        <div class="row">
+                            <div class="col-12 alert alert-success text-center" role="alert">
+                                {{ session('status') }}
+                            </div>
+                        </div>
+                    @endif
+
+                @if(session('errorMsg'))
+                    <div class="alert alert-danger">
+                    {{ session('errorMsg') }}
+                    </div> 
+                @endif
+
                 @yield('content')
             </div>
         </main>

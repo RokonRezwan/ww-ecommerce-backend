@@ -33,11 +33,18 @@ class OrderApiController extends Controller
                 $shipping = $request->shippingUserName.'<br>'.$request->shipping_address;
                 $billing = $request->billingUserName.'<br>'.$request->billing_address;
 
-                $order = new Order;
+                $orderNumber = random_int(100000,999999);
 
+                while(Order::where('order_number', $orderNumber)->exists())
+                {
+                    $orderNumber++;
+                }
+
+                $order = new Order;
+                
                 $order->user_id = 1;
                 $order->order_status_id = 1;
-                $order->order_number = random_int(100000,999999);
+                $order->order_number = $orderNumber;
                 $order->shipping_address = $shipping;
                 $order->billing_address = $billing;
                 $order->promo_discount_amount = $request->promo_discount_amount;
@@ -74,7 +81,7 @@ class OrderApiController extends Controller
 
         } catch (QueryException $e) {
 
-            return back()->withErrors(['status' => $e->getMessage()]);
+            return response()->json(['status' => $e->getMessage()]);
         }
 
         return response()->json(['status' => 'Order Placed Successfully']);
